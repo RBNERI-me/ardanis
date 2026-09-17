@@ -73,7 +73,17 @@ export default function Home() {
           <p className="editorial-subheading text-cyan-bright/60 mb-3">Official Services</p>
           <h2 className="text-3xl md:text-4xl font-bold font-display text-white tracking-tight">Public Services Portal</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <Link to="/history" className="glass-card rounded-2xl p-8 group relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl group-hover:bg-gold/10 transition-all"></div>
+            <div className="relative z-10">
+              <div className="w-14 h-14 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-gold/20 transition-all">
+                <i className="fa-solid fa-landmark text-gold text-xl"></i>
+              </div>
+              <h3 className="font-bold text-white mb-2 text-lg">History</h3>
+              <p className="text-sm text-white/60 leading-relaxed">Our journey from vision to sovereign nation</p>
+            </div>
+          </Link>
           <Link to="/e-residency" className="glass-card rounded-2xl p-8 group relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-bright/5 rounded-full blur-3xl group-hover:bg-cyan-bright/10 transition-all"></div>
             <div className="relative z-10">

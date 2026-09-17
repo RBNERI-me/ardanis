@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import GovBot from './components/GovBot';
 import Home from './pages/Home';
+import History from './pages/History';
 import EResidency from './pages/EResidency';
 import CredentialsVault from './pages/CredentialsVault';
 import Citizenship from './pages/Citizenship';
@@ -47,6 +48,7 @@ function App() {
         <main className="flex-1 relative z-10">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/history" element={<History />} />
             <Route path="/e-residency" element={<EResidency />} />
             <Route path="/credentials" element={<CredentialsVault />} />
             <Route path="/citizenship" element={<Citizenship />} />
