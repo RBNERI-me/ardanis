@@ -14,63 +14,108 @@ body {
   overflow-x: hidden;
 }
 
-/* Deep Ocean Background with Radial Gradients */
+/* Deep Ocean Background - Enhanced Atmospheric Mood */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background: 
-    radial-gradient(ellipse at 20% 30%, rgba(21, 43, 197, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 70%, rgba(92, 1, 255, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(1, 255, 246, 0.05) 0%, transparent 70%);
+    radial-gradient(ellipse at 15% 20%, rgba(21, 43, 197, 0.2) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 75%, rgba(92, 1, 255, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(1, 255, 246, 0.08) 0%, transparent 75%),
+    radial-gradient(ellipse at 30% 80%, rgba(65, 1, 255, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 25%, rgba(1, 214, 255, 0.1) 0%, transparent 65%);
   pointer-events: none;
   z-index: 0;
+  animation: ambientShift 20s ease-in-out infinite;
 }
 
-/* Glassmorphism Effects */
+@keyframes ambientShift {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+/* Glassmorphism Effects - Refined */
 .glass {
-  background: rgba(5, 8, 20, 0.6);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(1, 255, 246, 0.12);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: rgba(5, 11, 20, 0.7);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(1, 255, 246, 0.05);
 }
 
 .glass-dark {
-  background: rgba(5, 8, 20, 0.9);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
-  border: 1px solid rgba(1, 255, 246, 0.1);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  background: rgba(5, 11, 20, 0.95);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-card {
-  background: linear-gradient(135deg, rgba(21, 43, 197, 0.08) 0%, rgba(5, 8, 20, 0.6) 100%);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(1, 255, 246, 0.15);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: linear-gradient(135deg, rgba(21, 43, 197, 0.1) 0%, rgba(5, 11, 20, 0.7) 100%);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 20px rgba(1, 255, 246, 0.03);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
-  background: linear-gradient(135deg, rgba(21, 43, 197, 0.12) 0%, rgba(5, 8, 20, 0.7) 100%);
-  border-color: rgba(1, 255, 246, 0.3);
-  box-shadow: 0 12px 48px rgba(1, 255, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transform: translateY(-4px);
+  background: linear-gradient(135deg, rgba(21, 43, 197, 0.15) 0%, rgba(5, 11, 20, 0.8) 100%);
+  border-color: rgba(1, 255, 246, 0.35);
+  box-shadow: 
+    0 16px 56px rgba(1, 255, 246, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 30px rgba(1, 255, 246, 0.05);
+  transform: translateY(-6px);
 }
 
-/* Glow Effects */
+/* Luminous Glow Effects - Enhanced */
 .glow-cyan {
-  box-shadow: 0 0 30px rgba(1, 255, 246, 0.5), 0 0 60px rgba(1, 255, 246, 0.3), inset 0 0 30px rgba(1, 255, 246, 0.15);
+  box-shadow: 
+    0 0 40px rgba(1, 255, 246, 0.6),
+    0 0 80px rgba(1, 255, 246, 0.35),
+    0 0 120px rgba(1, 255, 246, 0.15),
+    inset 0 0 40px rgba(1, 255, 246, 0.2);
 }
 
 .glow-gold {
-  box-shadow: 0 0 30px rgba(255, 216, 1, 0.5), 0 0 60px rgba(255, 216, 1, 0.3), inset 0 0 30px rgba(255, 216, 1, 0.15);
+  box-shadow: 
+    0 0 40px rgba(255, 216, 1, 0.6),
+    0 0 80px rgba(255, 216, 1, 0.35),
+    0 0 120px rgba(255, 216, 1, 0.15),
+    inset 0 0 40px rgba(255, 216, 1, 0.2);
+}
+
+.glow-violet {
+  box-shadow: 
+    0 0 40px rgba(92, 1, 255, 0.6),
+    0 0 80px rgba(92, 1, 255, 0.35),
+    0 0 120px rgba(92, 1, 255, 0.15),
+    inset 0 0 40px rgba(92, 1, 255, 0.2);
 }
 
 .text-glow-cyan {
-  text-shadow: 0 0 15px rgba(1, 255, 246, 0.8), 0 0 30px rgba(1, 255, 246, 0.4);
+  text-shadow: 
+    0 0 20px rgba(1, 255, 246, 0.9),
+    0 0 40px rgba(1, 255, 246, 0.5),
+    0 0 60px rgba(1, 255, 246, 0.2);
+}
+
+.text-glow-gold {
+  text-shadow: 
+    0 0 20px rgba(255, 216, 1, 0.9),
+    0 0 40px rgba(255, 216, 1, 0.5),
+    0 0 60px rgba(255, 216, 1, 0.2);
 }
 
 /* Gradient Text */
@@ -81,11 +126,12 @@ body::before {
   background-clip: text;
 }
 
-/* Editorial Line */
+/* Editorial Line - Enhanced */
 .editorial-line {
   height: 1px;
   background: linear-gradient(90deg, transparent 0%, rgba(1, 255, 246, 0.3) 20%, rgba(255, 216, 1, 0.5) 50%, rgba(1, 255, 246, 0.3) 80%, transparent 100%);
   position: relative;
+  margin: 3rem 0;
 }
 
 .editorial-line::before {
@@ -99,6 +145,71 @@ body::before {
   background: #ffd801;
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(255, 216, 1, 0.8);
+}
+
+/* Classical Ornamental Flourishes */
+.ornamental-corner {
+  position: relative;
+}
+
+.ornamental-corner::before,
+.ornamental-corner::after {
+  content: '❧';
+  position: absolute;
+  color: rgba(255, 216, 1, 0.3);
+  font-size: 1.5rem;
+  pointer-events: none;
+}
+
+.ornamental-corner::before {
+  top: 0;
+  left: 0;
+}
+
+.ornamental-corner::after {
+  bottom: 0;
+  right: 0;
+  transform: rotate(180deg);
+}
+
+/* Editorial Typography Enhancements */
+.editorial-heading {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.editorial-subheading {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+/* Renaissance Frame Effect */
+.renaissance-frame {
+  position: relative;
+  padding: 2rem;
+}
+
+.renaissance-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(255, 216, 1, 0.2);
+  border-radius: 0.5rem;
+  pointer-events: none;
+}
+
+.renaissance-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0.5rem;
+  border: 1px solid rgba(255, 216, 1, 0.1);
+  border-radius: 0.375rem;
+  pointer-events: none;
 }
 
 /* Animations */
