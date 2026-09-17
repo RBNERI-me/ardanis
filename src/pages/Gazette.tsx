@@ -4,9 +4,19 @@ import { articles } from '../data/articles';
 
 export default function Gazette() {
   const [filter, setFilter] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const categories = ['All', 'Vanguard Assembly', 'Danube Territory', 'Diplomatic Updates'];
-  const filtered = filter === 'All' ? articles : articles.filter(a => a.category === filter);
+  
+  // Filter by category first, then by search query
+  const filtered = articles
+    .filter(a => filter === 'All' || a.category === filter)
+    .filter(a => 
+      searchQuery === '' || 
+      a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
@@ -18,7 +28,7 @@ export default function Gazette() {
         <p className="text-white/50 max-w-xl mx-auto">Official announcements, legislative updates, and territorial dispatches from the Sovereign Republic of Ardanis.</p>
       </div>
 
-      <div className="flex flex-wrap gap-2 justify-center mb-8">
+      <div className="flex flex-wrap gap-2 justify-center mb-6">
         {categories.map((cat) => (
           <button
             key={cat}
@@ -30,6 +40,28 @@ export default function Gazette() {
             {cat}
           </button>
         ))}
+      </div>
+
+      {/* Search Bar */}
+      <div className="max-w-xl mx-auto mb-8">
+        <div className="relative">
+          <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-cyan-bright/50"></i>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search articles by title, content, or tags..."
+            className="w-full pl-11 pr-4 py-3 rounded-xl input-glass"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

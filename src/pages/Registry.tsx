@@ -18,6 +18,17 @@ const legislation = [
   { id: 'ARD-L-2026-006', title: 'Cultural Heritage Preservation Act', sponsor: 'Arts & Culture', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } },
 ];
 
+const treasuryData = [
+  { category: 'Digital Infrastructure', allocation: 2400000, spent: 1800000, remaining: 600000 },
+  { category: 'Ecological Policy', allocation: 3200000, spent: 2100000, remaining: 1100000 },
+  { category: 'Civic Engagement', allocation: 1800000, spent: 1200000, remaining: 600000 },
+  { category: 'International Relations', allocation: 1500000, spent: 900000, remaining: 600000 },
+  { category: 'Economic Development', allocation: 2800000, spent: 2000000, remaining: 800000 },
+  { category: 'Cultural Affairs', allocation: 1200000, spent: 800000, remaining: 400000 },
+  { category: 'Scientific Research', allocation: 2600000, spent: 1900000, remaining: 700000 },
+  { category: 'Public Transparency', allocation: 900000, spent: 600000, remaining: 300000 },
+];
+
 function getStatusStyle(status: string) {
   switch (status) {
     case 'Passed': return 'bg-green-500/20 text-green-400 border-green-500/30';
@@ -36,6 +47,32 @@ function calculateVotingPercentage(votes: { for: number; against: number; abstai
   const total = votes.for + votes.against + votes.abstain;
   if (total === 0) return 0;
   return Math.round((votes.for / total) * 100);
+}
+
+function exportTreasuryCSV() {
+  const headers = ['Category', 'Allocation (AC)', 'Spent (AC)', 'Remaining (AC)', 'Utilization %'];
+  const rows = treasuryData.map(item => [
+    item.category,
+    item.allocation,
+    item.spent,
+    item.remaining,
+    Math.round((item.spent / item.allocation) * 100)
+  ]);
+  
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.join(','))
+  ].join('\n');
+  
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'ardanis_treasury_audit_2026.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 export default function Registry() {
@@ -144,6 +181,67 @@ export default function Registry() {
               </tbody>
             </table>
           </div>
+        </div>
+      </section>
+
+      {/* Treasury & Budget Audit */}
+      <section className="mt-12">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold font-display text-white flex items-center gap-2">
+            <i className="fa-solid fa-coins text-gold"></i> Public Treasury Allocations
+          </h2>
+          <button
+            onClick={exportTreasuryCSV}
+            className="btn-gold px-4 py-2 rounded-lg text-sm"
+          >
+            <i className="fa-solid fa-file-csv mr-2"></i> Export CSV
+          </button>
+        </div>
+
+        <div className="glass-card rounded-2xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-cyan-bright/10">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-cyan-bright/70 uppercase tracking-wider">Category</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-cyan-bright/70 uppercase tracking-wider">Allocation</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-cyan-bright/70 uppercase tracking-wider">Spent</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-cyan-bright/70 uppercase tracking-wider">Remaining</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-cyan-bright/70 uppercase tracking-wider">Utilization</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-cyan-bright/5">
+                {treasuryData.map((item) => {
+                  const utilization = Math.round((item.spent / item.allocation) * 100);
+                  return (
+                    <tr key={item.category} className="hover:bg-cyan-bright/5 transition-colors">
+                      <td className="px-4 py-3 text-sm text-white font-medium">{item.category}</td>
+                      <td className="px-4 py-3 text-sm text-white/70">{item.allocation.toLocaleString()} AC</td>
+                      <td className="px-4 py-3 text-sm text-white/70">{item.spent.toLocaleString()} AC</td>
+                      <td className="px-4 py-3 text-sm text-cyan-bright">{item.remaining.toLocaleString()} AC</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 max-w-[100px]">
+                            <div className="progress-bar h-2">
+                              <div className="progress-fill" style={{ width: `${utilization}%` }}></div>
+                            </div>
+                          </div>
+                          <span className="text-xs text-white/60 font-medium">{utilization}%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="mt-4 p-4 bg-gold/10 border border-gold/20 rounded-xl">
+          <p className="text-sm text-white/70">
+            <i className="fa-solid fa-info-circle text-gold mr-2"></i>
+            All figures are in Ardanian Credits (AC). Treasury data is updated quarterly and audited by the Public Transparency Portfolio. Export this data for independent verification.
+          </p>
         </div>
       </section>
     </div>

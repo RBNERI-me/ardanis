@@ -1,9 +1,20 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
+import { useState } from 'react';
 import { articles, getArticleBySlug } from '../data/articles';
+
+interface Comment {
+  id: number;
+  author: string;
+  text: string;
+  timestamp: string;
+}
 
 export default function ArticleDetail() {
   const { slug } = useParams<{ slug: string }>();
   const article = slug ? getArticleBySlug(slug) : undefined;
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentAuthor, setCommentAuthor] = useState('');
+  const [commentText, setCommentText] = useState('');
 
   if (!article) {
     return <Navigate to="/gazette" replace />;
@@ -120,6 +131,85 @@ export default function ArticleDetail() {
           </div>
         </section>
       )}
+
+      {/* Comments Section */}
+      <section className="mt-12">
+        <h2 className="text-2xl font-bold font-display text-white mb-6 flex items-center gap-2">
+          <i className="fa-solid fa-comments text-cyan-bright"></i>
+          Citizen Comments ({comments.length})
+        </h2>
+
+        {/* Comment Form */}
+        <div className="glass-card rounded-2xl p-6 mb-6">
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            if (!commentAuthor.trim() || !commentText.trim()) return;
+            setComments([...comments, {
+              id: comments.length + 1,
+              author: commentAuthor,
+              text: commentText,
+              timestamp: new Date().toISOString()
+            }]);
+            setCommentAuthor('');
+            setCommentText('');
+          }} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-white/70 mb-2">Your Name</label>
+              <input
+                type="text"
+                value={commentAuthor}
+                onChange={(e) => setCommentAuthor(e.target.value)}
+                placeholder="Enter your name or handle"
+                className="w-full px-4 py-2 rounded-lg input-glass"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white/70 mb-2">Your Comment</label>
+              <textarea
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Share your thoughts on this article..."
+                rows={3}
+                className="w-full px-4 py-2 rounded-lg input-glass resize-none"
+                required
+              />
+            </div>
+            <button type="submit" className="btn-primary px-6 py-2 rounded-lg text-sm">
+              <i className="fa-solid fa-paper-plane mr-2"></i> Submit Comment
+            </button>
+          </form>
+        </div>
+
+        {/* Comments List */}
+        {comments.length > 0 && (
+          <div className="space-y-4">
+            {comments.map((comment) => (
+              <div key={comment.id} className="glass-card rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-bright to-violet flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    {comment.author.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-white text-sm">{comment.author}</span>
+                      <span className="text-xs text-white/40">
+                        {new Date(comment.timestamp).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-white/70">{comment.text}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

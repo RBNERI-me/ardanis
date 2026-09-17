@@ -66,6 +66,34 @@ export default function Footer() {
                 Pocket West-B, Danube
               </li>
             </ul>
+            
+            {/* Network Status */}
+            <div className="mt-4 pt-4 border-t border-white/5">
+              <p className="text-xs text-white/50 mb-2 font-semibold">Network Status</p>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-white/40">API Gateway</span>
+                  <span className="flex items-center gap-1 text-green-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                    99.9% uptime
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-white/40">Open Commons</span>
+                  <span className="flex items-center gap-1 text-green-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                    100% uptime
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-white/40">Voting System</span>
+                  <span className="flex items-center gap-1 text-green-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                    99.8% uptime
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

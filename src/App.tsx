@@ -1,9 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import GovBot from './components/GovBot';
 import Home from './pages/Home';
 import EResidency from './pages/EResidency';
+import CredentialsVault from './pages/CredentialsVault';
 import Citizenship from './pages/Citizenship';
+import VotingSimulator from './pages/VotingSimulator';
 import Gazette from './pages/Gazette';
 import ArticleDetail from './pages/ArticleDetail';
 import Governance from './pages/Governance';
@@ -45,7 +48,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/e-residency" element={<EResidency />} />
+            <Route path="/credentials" element={<CredentialsVault />} />
             <Route path="/citizenship" element={<Citizenship />} />
+            <Route path="/voting" element={<VotingSimulator />} />
             <Route path="/gazette" element={<Gazette />} />
             <Route path="/gazette/:slug" element={<ArticleDetail />} />
             <Route path="/governance" element={<Governance />} />
@@ -53,6 +58,7 @@ function App() {
           </Routes>
         </main>
         <Footer />
+        <GovBot />
       </div>
     </Router>
   );

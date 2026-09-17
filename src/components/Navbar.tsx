@@ -6,10 +6,12 @@ import StateSeal from './StateSeal';
 const navItems = [
   { path: '/', label: 'Portal Home', icon: 'fa-house' },
   { path: '/e-residency', label: 'E-Residency', icon: 'fa-id-card' },
+  { path: '/credentials', label: 'Credentials', icon: 'fa-passport' },
   { path: '/citizenship', label: 'Citizenship', icon: 'fa-shield-halved' },
-  { path: '/gazette', label: 'National Gazette', icon: 'fa-newspaper' },
+  { path: '/voting', label: 'Voting', icon: 'fa-check-to-slot' },
+  { path: '/gazette', label: 'Gazette', icon: 'fa-newspaper' },
   { path: '/governance', label: 'Governance', icon: 'fa-landmark' },
-  { path: '/registry', label: 'Public Registry', icon: 'fa-database' },
+  { path: '/registry', label: 'Registry', icon: 'fa-database' },
 ];
 
 export default function Navbar() {
