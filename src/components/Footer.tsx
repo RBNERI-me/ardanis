@@ -100,7 +100,15 @@ export default function Footer() {
 
         <div className="mt-8 pt-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/30">© 2026 The Sovereign Republic of Ardanis. All sovereign rights reserved.</p>
-          <p className="text-xs text-white/30">Merit-Syndicate Parliamentary System • Open Commons Initiative</p>
+          <div className="flex items-center gap-4">
+            <p className="text-xs text-white/30">Merit-Syndicate Parliamentary System • Open Commons Initiative</p>
+            <Link to="/careers" className="text-xs text-white/30 hover:text-cyan-bright transition-colors">
+              Careers
+            </Link>
+            <Link to="/admin-portal" className="text-xs text-white/20 hover:text-white/40 transition-colors" title="Authorized Personnel Only">
+              <i className="fa-solid fa-lock"></i>
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

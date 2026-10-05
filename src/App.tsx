@@ -12,6 +12,8 @@ import Gazette from './pages/Gazette';
 import ArticleDetail from './pages/ArticleDetail';
 import Governance from './pages/Governance';
 import Registry from './pages/Registry';
+import Jobs from './pages/Jobs';
+import AdminPanel from './pages/AdminPanel';
 
 function AnnouncementBar() {
   return (
@@ -57,6 +59,8 @@ function App() {
             <Route path="/gazette/:slug" element={<ArticleDetail />} />
             <Route path="/governance" element={<Governance />} />
             <Route path="/registry" element={<Registry />} />
+            <Route path="/careers" element={<Jobs />} />
+            <Route path="/admin-portal" element={<AdminPanel />} />
           </Routes>
         </main>
         <Footer />

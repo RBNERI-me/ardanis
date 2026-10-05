@@ -13,6 +13,7 @@ const navItems = [
   { path: '/gazette', label: 'Gazette', icon: 'fa-newspaper' },
   { path: '/governance', label: 'Governance', icon: 'fa-landmark' },
   { path: '/registry', label: 'Registry', icon: 'fa-database' },
+  { path: '/careers', label: 'Careers', icon: 'fa-briefcase' },
 ];
 
 const languages = [
