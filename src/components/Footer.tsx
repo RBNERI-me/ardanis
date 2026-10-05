@@ -35,7 +35,6 @@ export default function Footer() {
               <li><Link to="/citizenship" className="hover:text-cyan-bright transition-colors">Citizenship</Link></li>
               <li><Link to="/gazette" className="hover:text-cyan-bright transition-colors">National Gazette</Link></li>
               <li><Link to="/registry" className="hover:text-cyan-bright transition-colors">Public Registry</Link></li>
-              <li><Link to="/careers" className="hover:text-cyan-bright transition-colors">Careers</Link></li>
             </ul>
           </div>
 
