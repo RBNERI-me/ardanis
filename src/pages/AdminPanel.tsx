@@ -31,9 +31,10 @@ interface Legislation {
   id: string;
   title: string;
   sponsor: string;
-  status: 'Draft' | 'Bill' | 'In Progress' | 'Passed';
+  status: 'Draft' | 'Bill' | 'In Open Commons' | 'In Commons Assembly' | 'In Progress' | 'Passed';
   votes: { for: number; against: number; abstain: number };
   description?: string;
+  summary?: string;
   createdDate?: string;
 }
 
@@ -165,6 +166,8 @@ export default function AdminPanel() {
   const [showOfficialForm, setShowOfficialForm] = useState(false);
   const [editingLegislation, setEditingLegislation] = useState<Legislation | null>(null);
   const [showLegislationForm, setShowLegislationForm] = useState(false);
+  const [editingJob, setEditingJob] = useState<Job | null>(null);
+  const [showJobForm, setShowJobForm] = useState(false);
 
   // Load data from localStorage or use defaults
   useEffect(() => {
@@ -208,14 +211,27 @@ export default function AdminPanel() {
     }
   }, [adminData, isLoggedIn]);
 
+  // Default admin account
+  const DEFAULT_ADMIN: User = {
+    id: 'USR-001',
+    username: 'adminardanis',
+    password: '4rd4n15b3g1n**^',
+    role: 'admin',
+    name: 'System Administrator',
+    email: 'admin@ardan.gov',
+    createdAt: new Date().toISOString()
+  };
+
   // Load users from localStorage
   useEffect(() => {
     const savedUsers = localStorage.getItem('ardanisAdminUsers');
     if (savedUsers) {
-      setUsers(JSON.parse(savedUsers));
+      const parsedUsers = JSON.parse(savedUsers);
+      setUsers(parsedUsers);
     } else {
-      // No users exist - show setup screen
-      setUsers([]);
+      // Initialize with default admin account
+      setUsers([DEFAULT_ADMIN]);
+      localStorage.setItem('ardanisAdminUsers', JSON.stringify([DEFAULT_ADMIN]));
     }
   }, []);
 
@@ -440,6 +456,22 @@ export default function AdminPanel() {
     }
   };
 
+  const handleSaveJob = (job: Job) => {
+    const existingIndex = adminData.jobs.findIndex(j => j.id === job.id);
+    if (existingIndex >= 0) {
+      const updated = [...adminData.jobs];
+      updated[existingIndex] = job;
+      setAdminData({ ...adminData, jobs: updated });
+    } else {
+      setAdminData({
+        ...adminData,
+        jobs: [...adminData.jobs, job]
+      });
+    }
+    setEditingJob(null);
+    setShowJobForm(false);
+  };
+
   // Initial Setup Screen (when no users exist)
   if (users.length === 0) {
     return (
@@ -625,9 +657,11 @@ export default function AdminPanel() {
               <i className="fa-solid fa-lock mr-1"></i>
               This is a restricted area. All actions are logged.
             </p>
-            <p className="text-xs text-white/30 text-center mt-2">
-              Contact your system administrator if you need access.
-            </p>
+            <div className="mt-4 p-3 bg-cyan-bright/10 border border-cyan-bright/30 rounded-lg">
+              <p className="text-xs text-cyan-bright font-medium mb-1">Default Admin Credentials:</p>
+              <p className="text-xs text-white/70">Username: <span className="font-mono text-cyan-bright">adminardanis</span></p>
+              <p className="text-xs text-white/70">Password: <span className="font-mono text-cyan-bright">4rd4n15b3g1n**^</span></p>
+            </div>
           </div>
         </div>
       </div>
@@ -987,6 +1021,7 @@ export default function AdminPanel() {
                     status: 'Draft',
                     votes: { for: 0, against: 0, abstain: 0 },
                     description: '',
+                    summary: '',
                     createdDate: new Date().toISOString().split('T')[0]
                   });
                   setShowLegislationForm(true);
@@ -1008,6 +1043,8 @@ export default function AdminPanel() {
                         <span className={`px-3 py-1 rounded-full text-xs ${
                           leg.status === 'Passed' ? 'bg-green-500/20 text-green-400' :
                           leg.status === 'Bill' ? 'bg-blue-500/20 text-blue-400' :
+                          leg.status === 'In Open Commons' ? 'bg-purple-500/20 text-purple-400' :
+                          leg.status === 'In Commons Assembly' ? 'bg-indigo-500/20 text-indigo-400' :
                           leg.status === 'In Progress' ? 'bg-cyan-bright/20 text-cyan-bright' :
                           'bg-gold/20 text-gold'
                         }`}>
@@ -1017,6 +1054,11 @@ export default function AdminPanel() {
                       <h3 className="text-xl font-bold text-white mb-2">
                         {leg.title}
                       </h3>
+                      {leg.summary && (
+                        <p className="text-white/70 text-sm mb-2 italic">
+                          {leg.summary}
+                        </p>
+                      )}
                       <p className="text-white/60 text-sm">
                         Sponsor: {leg.sponsor}
                       </p>
@@ -1058,9 +1100,34 @@ export default function AdminPanel() {
         {/* Jobs Management */}
         {activeSection === 'jobs' && (
           <div>
-            <h2 className="text-3xl font-display font-bold text-white mb-6">
-              Manage Job Postings
-            </h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-display font-bold text-white">
+                Manage Job Postings
+              </h2>
+              <button
+                onClick={() => {
+                  setEditingJob({
+                    id: `JOB-${Date.now()}`,
+                    title: '',
+                    council: '',
+                    type: 'Full-Time',
+                    location: 'Pocket West-B',
+                    posted: new Date().toISOString().split('T')[0],
+                    deadline: '',
+                    description: '',
+                    requirements: [],
+                    responsibilities: [],
+                    salary: '',
+                    urgent: false
+                  });
+                  setShowJobForm(true);
+                }}
+                className="px-6 py-3 bg-gradient-to-r from-cyan-bright to-violet rounded-lg font-medium hover:shadow-lg hover:shadow-cyan-bright/50 transition-all"
+              >
+                <i className="fa-solid fa-plus mr-2"></i>
+                Create New Job
+              </button>
+            </div>
             <div className="space-y-4">
               {adminData.jobs.map(job => (
                 <div key={job.id} className="glass-card rounded-xl p-6">
@@ -1080,13 +1147,25 @@ export default function AdminPanel() {
                         {job.title}
                       </h3>
                       <p className="text-white/60 text-sm mb-1">{job.council}</p>
+                      <p className="text-white/40 text-xs">Deadline: {new Date(job.deadline).toLocaleDateString()}</p>
                     </div>
-                    <button
-                      onClick={() => handleDeleteJob(job.id)}
-                      className="px-3 py-2 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-all text-red-400"
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingJob(job);
+                          setShowJobForm(true);
+                        }}
+                        className="px-3 py-2 border border-cyan-bright/50 rounded-lg hover:bg-cyan-bright/10 transition-all text-cyan-bright"
+                      >
+                        <i className="fa-solid fa-edit"></i>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteJob(job.id)}
+                        className="px-3 py-2 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-all text-red-400"
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -1596,6 +1675,16 @@ export default function AdminPanel() {
                 />
               </div>
               <div>
+                <label className="block text-white/80 mb-2">Summary</label>
+                <textarea
+                  value={editingLegislation.summary || ''}
+                  onChange={(e) => setEditingLegislation({...editingLegislation, summary: e.target.value})}
+                  rows={2}
+                  placeholder="Brief summary for public display..."
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none resize-none"
+                />
+              </div>
+              <div>
                 <label className="block text-white/80 mb-2">Sponsor</label>
                 <input
                   type="text"
@@ -1613,6 +1702,8 @@ export default function AdminPanel() {
                 >
                   <option value="Draft">Draft</option>
                   <option value="Bill">Bill</option>
+                  <option value="In Open Commons">In Open Commons</option>
+                  <option value="In Commons Assembly">In Commons Assembly</option>
                   <option value="In Progress">In Progress</option>
                   <option value="Passed">Passed (Law)</option>
                 </select>
@@ -1658,6 +1749,154 @@ export default function AdminPanel() {
                   onClick={() => {
                     setShowLegislationForm(false);
                     setEditingLegislation(null);
+                  }}
+                  className="px-6 py-3 border border-white/20 rounded-lg font-medium hover:bg-white/5 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Job Edit Modal */}
+      {showJobForm && editingJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="glass-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-midnight/90 backdrop-blur-sm p-6 border-b border-white/10 flex justify-between items-center">
+              <h2 className="text-2xl font-display font-bold text-white">
+                {editingJob.title === '' ? 'Create New Job Posting' : 'Edit Job Posting'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowJobForm(false);
+                  setEditingJob(null);
+                }}
+                className="text-white/60 hover:text-white text-2xl"
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-white/80 mb-2">Job Title</label>
+                <input
+                  type="text"
+                  value={editingJob.title}
+                  onChange={(e) => setEditingJob({...editingJob, title: e.target.value})}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  placeholder="e.g., Digital Infrastructure Engineer"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-white/80 mb-2">Council</label>
+                  <input
+                    type="text"
+                    value={editingJob.council}
+                    onChange={(e) => setEditingJob({...editingJob, council: e.target.value})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                    placeholder="e.g., Science & Technology Council"
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/80 mb-2">Job Type</label>
+                  <select
+                    value={editingJob.type}
+                    onChange={(e) => setEditingJob({...editingJob, type: e.target.value as any})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  >
+                    <option value="Full-Time">Full-Time</option>
+                    <option value="Part-Time">Part-Time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Volunteer">Volunteer</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-white/80 mb-2">Location</label>
+                  <input
+                    type="text"
+                    value={editingJob.location}
+                    onChange={(e) => setEditingJob({...editingJob, location: e.target.value})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                    placeholder="e.g., Pocket West-B (Remote Eligible)"
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/80 mb-2">Application Deadline</label>
+                  <input
+                    type="date"
+                    value={editingJob.deadline}
+                    onChange={(e) => setEditingJob({...editingJob, deadline: e.target.value})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Salary Range (Optional)</label>
+                <input
+                  type="text"
+                  value={editingJob.salary || ''}
+                  onChange={(e) => setEditingJob({...editingJob, salary: e.target.value})}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  placeholder="e.g., 45,000 - 65,000 Ardanian Credits/year"
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Job Description</label>
+                <textarea
+                  value={editingJob.description}
+                  onChange={(e) => setEditingJob({...editingJob, description: e.target.value})}
+                  rows={4}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none resize-none"
+                  placeholder="Describe the role and its importance..."
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Requirements (one per line)</label>
+                <textarea
+                  value={editingJob.requirements.join('\n')}
+                  onChange={(e) => setEditingJob({...editingJob, requirements: e.target.value.split('\n').filter(r => r.trim())})}
+                  rows={4}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none resize-none"
+                  placeholder="• Degree in relevant field&#10;• 3+ years experience&#10;• Strong communication skills"
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Responsibilities (one per line)</label>
+                <textarea
+                  value={editingJob.responsibilities.join('\n')}
+                  onChange={(e) => setEditingJob({...editingJob, responsibilities: e.target.value.split('\n').filter(r => r.trim())})}
+                  rows={4}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none resize-none"
+                  placeholder="• Manage digital infrastructure&#10;• Collaborate with team members&#10;• Prepare quarterly reports"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="urgent"
+                  checked={editingJob.urgent || false}
+                  onChange={(e) => setEditingJob({...editingJob, urgent: e.target.checked})}
+                  className="w-5 h-5 rounded border-white/20 accent-cyan-bright"
+                />
+                <label htmlFor="urgent" className="text-white/80">Mark as Urgent</label>
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button
+                  onClick={() => handleSaveJob(editingJob)}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-bright to-violet rounded-lg font-medium hover:shadow-lg hover:shadow-cyan-bright/50 transition-all"
+                >
+                  <i className="fa-solid fa-save mr-2"></i>
+                  Save Job Posting
+                </button>
+                <button
+                  onClick={() => {
+                    setShowJobForm(false);
+                    setEditingJob(null);
                   }}
                   className="px-6 py-3 border border-white/20 rounded-lg font-medium hover:bg-white/5 transition-all"
                 >
