@@ -30,10 +30,12 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-cyan-bright mb-3 uppercase tracking-wider">Services</h4>
             <ul className="space-y-2 text-sm text-white/50">
               <li><Link to="/history" className="hover:text-cyan-bright transition-colors">History & Heritage</Link></li>
+              <li><Link to="/officials" className="hover:text-cyan-bright transition-colors">Government Officials</Link></li>
               <li><Link to="/e-residency" className="hover:text-cyan-bright transition-colors">E-Residency</Link></li>
               <li><Link to="/citizenship" className="hover:text-cyan-bright transition-colors">Citizenship</Link></li>
               <li><Link to="/gazette" className="hover:text-cyan-bright transition-colors">National Gazette</Link></li>
               <li><Link to="/registry" className="hover:text-cyan-bright transition-colors">Public Registry</Link></li>
+              <li><Link to="/careers" className="hover:text-cyan-bright transition-colors">Careers</Link></li>
             </ul>
           </div>
 

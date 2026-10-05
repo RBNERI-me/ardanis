@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import GovBot from './components/GovBot';
 import Home from './pages/Home';
 import History from './pages/History';
+import Officials from './pages/Officials';
 import EResidency from './pages/EResidency';
 import CredentialsVault from './pages/CredentialsVault';
 import Citizenship from './pages/Citizenship';
@@ -51,6 +52,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/history" element={<History />} />
+            <Route path="/officials" element={<Officials />} />
             <Route path="/e-residency" element={<EResidency />} />
             <Route path="/credentials" element={<CredentialsVault />} />
             <Route path="/citizenship" element={<Citizenship />} />

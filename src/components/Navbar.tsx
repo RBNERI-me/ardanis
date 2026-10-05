@@ -6,6 +6,7 @@ import StateSeal from './StateSeal';
 const navItems = [
   { path: '/', label: 'Home', icon: 'fa-house' },
   { path: '/history', label: 'History', icon: 'fa-landmark' },
+  { path: '/officials', label: 'Officials', icon: 'fa-user-tie' },
   { path: '/e-residency', label: 'E-Residency', icon: 'fa-id-card' },
   { path: '/credentials', label: 'Credentials', icon: 'fa-passport' },
   { path: '/citizenship', label: 'Citizenship', icon: 'fa-shield-halved' },

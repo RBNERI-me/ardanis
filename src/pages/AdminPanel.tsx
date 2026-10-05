@@ -4,12 +4,125 @@ import { jobs, type Job } from '../data/jobs';
 
 type UserRole = 'reporter' | 'moderator' | 'admin' | 'official' | null;
 
+interface Official {
+  id: string;
+  name: string;
+  title: string;
+  council: string;
+  portfolio: string;
+  termStart: string;
+  termEnd: string;
+  bio: string;
+  status: 'Active' | 'On Leave' | 'Transitioning';
+}
+
+interface Legislation {
+  id: string;
+  title: string;
+  sponsor: string;
+  status: 'Draft' | 'Bill' | 'In Progress' | 'Passed';
+  votes: { for: number; against: number; abstain: number };
+  description?: string;
+  createdDate?: string;
+}
+
 interface AdminState {
   articles: Article[];
   jobs: Job[];
-  ministers: any[];
-  legislation: any[];
+  officials: Official[];
+  legislation: Legislation[];
 }
+
+const defaultOfficials: Official[] = [
+  {
+    id: 'OFF-001',
+    name: 'Dr. Elara Voss',
+    title: 'Minister',
+    council: 'Science & Technology Council',
+    portfolio: 'Digital Infrastructure',
+    termStart: '2026-01-01',
+    termEnd: '2026-03-31',
+    bio: 'Dr. Voss brings 15 years of experience in distributed systems and digital governance.',
+    status: 'Active'
+  },
+  {
+    id: 'OFF-002',
+    name: 'Marcus Chen',
+    title: 'Minister',
+    council: 'Environment & Territory Council',
+    portfolio: 'Ecological Policy',
+    termStart: '2026-01-01',
+    termEnd: '2026-03-31',
+    bio: 'Marcus is a recognized expert in wetland ecology and conservation biology.',
+    status: 'Active'
+  },
+  {
+    id: 'OFF-003',
+    name: 'Amara Okafor',
+    title: 'Minister',
+    council: 'Governance & Civic Affairs Council',
+    portfolio: 'Civic Engagement',
+    termStart: '2026-01-01',
+    termEnd: '2026-03-31',
+    bio: 'Amara has dedicated her career to participatory democracy and civic technology.',
+    status: 'Active'
+  },
+  {
+    id: 'OFF-004',
+    name: 'Lukas Brenner',
+    title: 'Minister',
+    council: 'Diplomacy & External Relations Council',
+    portfolio: 'International Relations',
+    termStart: '2026-01-01',
+    termEnd: '2026-03-31',
+    bio: 'Lukas brings extensive diplomatic experience from the United Nations.',
+    status: 'Active'
+  },
+  {
+    id: 'OFF-005',
+    name: 'Sofia Petrov',
+    title: 'Minister',
+    council: 'Economics & Trade Council',
+    portfolio: 'Economic Development',
+    termStart: '2026-01-01',
+    termEnd: '2026-03-31',
+    bio: 'Sofia is an economist specializing in digital currencies and alternative economic systems.',
+    status: 'Active'
+  },
+  {
+    id: 'OFF-006',
+    name: 'Kai Nakamura',
+    title: 'Minister',
+    council: 'Arts & Culture Council',
+    portfolio: 'Cultural Affairs',
+    termStart: '2026-01-01',
+    termEnd: '2026-03-31',
+    bio: 'Kai is an accomplished artist and cultural curator with exhibitions worldwide.',
+    status: 'Active'
+  },
+  {
+    id: 'OFF-007',
+    name: 'Iris de Vries',
+    title: 'Minister',
+    council: 'Science & Technology Council',
+    portfolio: 'Scientific Research',
+    termStart: '2026-01-01',
+    termEnd: '2026-03-31',
+    bio: 'Dr. de Vries holds PhDs in both Physics and Computer Science.',
+    status: 'Active'
+  },
+  {
+    id: 'OFF-008',
+    name: 'Tomás Rivera',
+    title: 'Minister',
+    council: 'Governance & Civic Affairs Council',
+    portfolio: 'Public Transparency',
+    termStart: '2026-01-01',
+    termEnd: '2026-03-31',
+    bio: 'Tomás is a transparency advocate and open data specialist.',
+    status: 'Active'
+  }
+];
 
 export default function AdminPanel() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,31 +131,39 @@ export default function AdminPanel() {
   const [adminData, setAdminData] = useState<AdminState>({
     articles: [],
     jobs: [],
-    ministers: [],
+    officials: [],
     legislation: []
   });
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [showArticleForm, setShowArticleForm] = useState(false);
+  const [editingOfficial, setEditingOfficial] = useState<Official | null>(null);
+  const [showOfficialForm, setShowOfficialForm] = useState(false);
+  const [editingLegislation, setEditingLegislation] = useState<Legislation | null>(null);
+  const [showLegislationForm, setShowLegislationForm] = useState(false);
 
   // Load data from localStorage or use defaults
   useEffect(() => {
     const savedData = localStorage.getItem('ardanisAdminData');
     if (savedData) {
-      setAdminData(JSON.parse(savedData));
+      const data = JSON.parse(savedData);
+      setAdminData({
+        articles: data.articles || articles,
+        jobs: data.jobs || jobs,
+        officials: data.officials || defaultOfficials,
+        legislation: data.legislation || [
+          { id: 'ARD-L-2026-001', title: 'Digital Commons Expansion Act', sponsor: 'Governance Council', status: 'Passed', votes: { for: 72, against: 3, abstain: 10 } },
+          { id: 'ARD-L-2026-002', title: 'Biodiversity Corridor Protection Bill', sponsor: 'Environment Council', status: 'In Progress', votes: { for: 48, against: 12, abstain: 8 } },
+          { id: 'ARD-L-2026-003', title: 'E-Resident Voting Rights Amendment', sponsor: 'Citizen Petition #47', status: 'In Progress', votes: { for: 35, against: 22, abstain: 15 } },
+          { id: 'ARD-L-2026-004', title: 'Open Data Transparency Mandate', sponsor: 'Transparency Portfolio', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } },
+          { id: 'ARD-L-2026-005', title: 'Renewable Energy Infrastructure Fund', sponsor: 'Science & Technology', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } },
+          { id: 'ARD-L-2026-006', title: 'Cultural Heritage Preservation Act', sponsor: 'Arts & Culture', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } }
+        ]
+      });
     } else {
       setAdminData({
         articles: articles,
         jobs: jobs,
-        ministers: [
-          { name: 'Dr. Elara Voss', portfolio: 'Digital Infrastructure', council: 'Science & Technology', status: 'Active', termExpiry: '2026-03-31' },
-          { name: 'Marcus Chen', portfolio: 'Ecological Policy', council: 'Environment & Territory', status: 'Active', termExpiry: '2026-03-31' },
-          { name: 'Amara Okafor', portfolio: 'Civic Engagement', council: 'Governance', status: 'Active', termExpiry: '2026-03-31' },
-          { name: 'Lukas Brenner', portfolio: 'International Relations', council: 'Diplomacy', status: 'Active', termExpiry: '2026-03-31' },
-          { name: 'Sofia Petrov', portfolio: 'Economic Development', council: 'Economics & Trade', status: 'Active', termExpiry: '2026-03-31' },
-          { name: 'Kai Nakamura', portfolio: 'Cultural Affairs', council: 'Arts & Culture', status: 'Active', termExpiry: '2026-03-31' },
-          { name: 'Iris de Vries', portfolio: 'Scientific Research', council: 'Science & Technology', status: 'Active', termExpiry: '2026-03-31' },
-          { name: 'Tomás Rivera', portfolio: 'Public Transparency', council: 'Governance', status: 'Active', termExpiry: '2026-03-31' }
-        ],
+        officials: defaultOfficials,
         legislation: [
           { id: 'ARD-L-2026-001', title: 'Digital Commons Expansion Act', sponsor: 'Governance Council', status: 'Passed', votes: { for: 72, against: 3, abstain: 10 } },
           { id: 'ARD-L-2026-002', title: 'Biodiversity Corridor Protection Bill', sponsor: 'Environment Council', status: 'In Progress', votes: { for: 48, against: 12, abstain: 8 } },
@@ -73,6 +194,7 @@ export default function AdminPanel() {
     setActiveSection('dashboard');
   };
 
+  // Article Management
   const handleDeleteArticle = (id: string) => {
     if (confirm('Are you sure you want to delete this article?')) {
       setAdminData({
@@ -98,29 +220,87 @@ export default function AdminPanel() {
     setShowArticleForm(false);
   };
 
-  const handleDeleteJob = (id: string) => {
-    if (confirm('Are you sure you want to delete this job posting?')) {
+  const handlePublishArticle = (id: string) => {
+    const updated = adminData.articles.map(a => 
+      a.id === id ? { ...a, status: 'Published' as any } : a
+    );
+    setAdminData({ ...adminData, articles: updated });
+  };
+
+  const handleDraftArticle = (id: string) => {
+    const updated = adminData.articles.map(a => 
+      a.id === id ? { ...a, status: 'Draft' as any } : a
+    );
+    setAdminData({ ...adminData, articles: updated });
+  };
+
+  // Officials Management
+  const handleDeleteOfficial = (id: string) => {
+    if (confirm('Are you sure you want to remove this official?')) {
       setAdminData({
         ...adminData,
-        jobs: adminData.jobs.filter(j => j.id !== id)
+        officials: adminData.officials.filter(o => o.id !== id)
       });
     }
   };
 
-  const handleDeleteMinister = (name: string) => {
-    if (confirm('Are you sure you want to remove this minister?')) {
+  const handleSaveOfficial = (official: Official) => {
+    const existingIndex = adminData.officials.findIndex(o => o.id === official.id);
+    if (existingIndex >= 0) {
+      const updated = [...adminData.officials];
+      updated[existingIndex] = official;
+      setAdminData({ ...adminData, officials: updated });
+    } else {
       setAdminData({
         ...adminData,
-        ministers: adminData.ministers.filter(m => m.name !== name)
+        officials: [...adminData.officials, official]
       });
     }
+    setEditingOfficial(null);
+    setShowOfficialForm(false);
   };
 
+  // Legislation Management
   const handleDeleteLegislation = (id: string) => {
     if (confirm('Are you sure you want to delete this legislation?')) {
       setAdminData({
         ...adminData,
         legislation: adminData.legislation.filter(l => l.id !== id)
+      });
+    }
+  };
+
+  const handleSaveLegislation = (legislation: Legislation) => {
+    const existingIndex = adminData.legislation.findIndex(l => l.id === legislation.id);
+    if (existingIndex >= 0) {
+      const updated = [...adminData.legislation];
+      updated[existingIndex] = legislation;
+      setAdminData({ ...adminData, legislation: updated });
+    } else {
+      setAdminData({
+        ...adminData,
+        legislation: [...adminData.legislation, legislation]
+      });
+    }
+    setEditingLegislation(null);
+    setShowLegislationForm(false);
+  };
+
+  const handleMakeLaw = (id: string) => {
+    if (confirm('Promote this bill to law? This will change its status to "Passed".')) {
+      const updated = adminData.legislation.map(l => 
+        l.id === id ? { ...l, status: 'Passed' as const } : l
+      );
+      setAdminData({ ...adminData, legislation: updated });
+    }
+  };
+
+  // Jobs Management
+  const handleDeleteJob = (id: string) => {
+    if (confirm('Are you sure you want to delete this job posting?')) {
+      setAdminData({
+        ...adminData,
+        jobs: adminData.jobs.filter(j => j.id !== id)
       });
     }
   };
@@ -215,7 +395,7 @@ export default function AdminPanel() {
                     Government Official
                   </div>
                   <div className="text-sm text-white/60">
-                    Manage governance data and public registry
+                    Manage officials and legislation
                   </div>
                 </div>
               </div>
@@ -293,15 +473,15 @@ export default function AdminPanel() {
           )}
           {(userRole === 'admin' || userRole === 'official') && (
             <button
-              onClick={() => setActiveSection('ministers')}
+              onClick={() => setActiveSection('officials')}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                activeSection === 'ministers'
+                activeSection === 'officials'
                   ? 'bg-cyan-bright/20 text-cyan-bright'
                   : 'text-white/60 hover:text-white'
               }`}
             >
-              <i className="fa-solid fa-users mr-2"></i>
-              Ministers
+              <i className="fa-solid fa-user-tie mr-2"></i>
+              Officials
             </button>
           )}
           {(userRole === 'admin' || userRole === 'official') && (
@@ -354,13 +534,13 @@ export default function AdminPanel() {
               <div className="glass-card rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-12 h-12 rounded-lg bg-gold/20 flex items-center justify-center">
-                    <i className="fa-solid fa-users text-gold text-xl"></i>
+                    <i className="fa-solid fa-user-tie text-gold text-xl"></i>
                   </div>
                 </div>
                 <div className="text-3xl font-bold text-white mb-1">
-                  {adminData.ministers.length}
+                  {adminData.officials.length}
                 </div>
-                <div className="text-white/60">Active Ministers</div>
+                <div className="text-white/60">Active Officials</div>
               </div>
 
               <div className="glass-card rounded-xl p-6">
@@ -387,38 +567,6 @@ export default function AdminPanel() {
                 <div className="text-white/60">Open Positions</div>
               </div>
             </div>
-
-            <div className="glass-card rounded-xl p-6 mt-8">
-              <h3 className="text-xl font-display font-bold text-white mb-4">
-                <i className="fa-solid fa-info-circle text-cyan-bright mr-2"></i>
-                System Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-white/60">Current Role:</span>
-                  <span className="ml-2 text-cyan-bright capitalize">{userRole}</span>
-                </div>
-                <div>
-                  <span className="text-white/60">Access Level:</span>
-                  <span className="ml-2 text-gold">
-                    {userRole === 'admin' ? 'Full Access' : 
-                     userRole === 'official' ? 'Governance Data' :
-                     userRole === 'moderator' ? 'Content Moderation' :
-                     'Article Management'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-white/60">Data Storage:</span>
-                  <span className="ml-2 text-violet">Local Browser Storage</span>
-                </div>
-                <div>
-                  <span className="text-white/60">Last Updated:</span>
-                  <span className="ml-2 text-cyan-light">
-                    {new Date().toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
@@ -442,14 +590,15 @@ export default function AdminPanel() {
                     excerpt: '',
                     content: [''],
                     tags: [],
-                    readTime: '5 min'
-                  });
+                    readTime: '5 min',
+                    status: 'Draft'
+                  } as any);
                   setShowArticleForm(true);
                 }}
                 className="px-6 py-3 bg-gradient-to-r from-cyan-bright to-violet rounded-lg font-medium hover:shadow-lg hover:shadow-cyan-bright/50 transition-all"
               >
                 <i className="fa-solid fa-plus mr-2"></i>
-                Add New Article
+                Create New Article
               </button>
             </div>
 
@@ -459,11 +608,15 @@ export default function AdminPanel() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                          (article as any).status === 'Published' 
+                            ? 'bg-green-500/20 text-green-400 border-green-500/50'
+                            : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50'
+                        }`}>
+                          {(article as any).status || 'Draft'}
+                        </span>
                         <span className="px-3 py-1 bg-cyan-bright/20 border border-cyan-bright/50 rounded-full text-cyan-bright text-xs">
                           {article.category}
-                        </span>
-                        <span className="text-white/60 text-sm">
-                          {new Date(article.date).toLocaleDateString()}
                         </span>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">
@@ -472,11 +625,25 @@ export default function AdminPanel() {
                       <p className="text-white/60 text-sm mb-2">
                         By {article.author} - {article.authorTitle}
                       </p>
-                      <p className="text-white/80 text-sm line-clamp-2">
-                        {article.excerpt}
-                      </p>
                     </div>
                     <div className="flex gap-2">
+                      {(article as any).status === 'Draft' ? (
+                        <button
+                          onClick={() => handlePublishArticle(article.id)}
+                          className="px-4 py-2 border border-green-500/50 rounded-lg hover:bg-green-500/10 transition-all text-green-400"
+                          title="Publish"
+                        >
+                          <i className="fa-solid fa-check"></i>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleDraftArticle(article.id)}
+                          className="px-4 py-2 border border-yellow-500/50 rounded-lg hover:bg-yellow-500/10 transition-all text-yellow-400"
+                          title="Make Draft"
+                        >
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           setEditingArticle(article);
@@ -500,32 +667,66 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* Ministers Management */}
-        {activeSection === 'ministers' && (
+        {/* Officials Management */}
+        {activeSection === 'officials' && (
           <div>
-            <h2 className="text-3xl font-display font-bold text-white mb-6">
-              Manage Ministers
-            </h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-display font-bold text-white">
+                Manage Officials
+              </h2>
+              <button
+                onClick={() => {
+                  setEditingOfficial({
+                    id: `OFF-${Date.now()}`,
+                    name: '',
+                    title: 'Minister',
+                    council: '',
+                    portfolio: '',
+                    termStart: new Date().toISOString().split('T')[0],
+                    termEnd: '',
+                    bio: '',
+                    status: 'Active'
+                  });
+                  setShowOfficialForm(true);
+                }}
+                className="px-6 py-3 bg-gradient-to-r from-cyan-bright to-violet rounded-lg font-medium hover:shadow-lg hover:shadow-cyan-bright/50 transition-all"
+              >
+                <i className="fa-solid fa-plus mr-2"></i>
+                Add Official
+              </button>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {adminData.ministers.map((minister, index) => (
-                <div key={index} className="glass-card rounded-xl p-6">
+              {adminData.officials.map(official => (
+                <div key={official.id} className="glass-card rounded-xl p-6">
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-xl font-bold text-white mb-2">
-                        {minister.name}
+                        {official.name}
                       </h3>
-                      <p className="text-cyan-bright mb-1">{minister.portfolio}</p>
-                      <p className="text-white/60 text-sm">{minister.council}</p>
+                      <p className="text-cyan-bright mb-1">{official.portfolio}</p>
+                      <p className="text-white/60 text-sm">{official.council}</p>
                       <p className="text-white/40 text-xs mt-2">
-                        Term expires: {minister.termExpiry}
+                        Term: {official.termStart} to {official.termEnd}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleDeleteMinister(minister.name)}
-                      className="px-3 py-2 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-all text-red-400"
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingOfficial(official);
+                          setShowOfficialForm(true);
+                        }}
+                        className="px-3 py-2 border border-cyan-bright/50 rounded-lg hover:bg-cyan-bright/10 transition-all text-cyan-bright"
+                      >
+                        <i className="fa-solid fa-edit"></i>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteOfficial(official.id)}
+                        className="px-3 py-2 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-all text-red-400"
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -536,9 +737,30 @@ export default function AdminPanel() {
         {/* Legislation Management */}
         {activeSection === 'legislation' && (
           <div>
-            <h2 className="text-3xl font-display font-bold text-white mb-6">
-              Manage Legislation
-            </h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-display font-bold text-white">
+                Manage Legislation
+              </h2>
+              <button
+                onClick={() => {
+                  setEditingLegislation({
+                    id: `ARD-L-2026-${String(adminData.legislation.length + 1).padStart(3, '0')}`,
+                    title: '',
+                    sponsor: '',
+                    status: 'Draft',
+                    votes: { for: 0, against: 0, abstain: 0 },
+                    description: '',
+                    createdDate: new Date().toISOString().split('T')[0]
+                  });
+                  setShowLegislationForm(true);
+                }}
+                className="px-6 py-3 bg-gradient-to-r from-cyan-bright to-violet rounded-lg font-medium hover:shadow-lg hover:shadow-cyan-bright/50 transition-all"
+              >
+                <i className="fa-solid fa-plus mr-2"></i>
+                Create Bill/Act
+              </button>
+            </div>
+
             <div className="space-y-4">
               {adminData.legislation.map(leg => (
                 <div key={leg.id} className="glass-card rounded-xl p-6">
@@ -548,6 +770,7 @@ export default function AdminPanel() {
                         <span className="text-white/40 text-xs font-mono">{leg.id}</span>
                         <span className={`px-3 py-1 rounded-full text-xs ${
                           leg.status === 'Passed' ? 'bg-green-500/20 text-green-400' :
+                          leg.status === 'Bill' ? 'bg-blue-500/20 text-blue-400' :
                           leg.status === 'In Progress' ? 'bg-cyan-bright/20 text-cyan-bright' :
                           'bg-gold/20 text-gold'
                         }`}>
@@ -561,12 +784,33 @@ export default function AdminPanel() {
                         Sponsor: {leg.sponsor}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleDeleteLegislation(leg.id)}
-                      className="px-3 py-2 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-all text-red-400"
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <div className="flex gap-2">
+                      {leg.status !== 'Passed' && (
+                        <button
+                          onClick={() => handleMakeLaw(leg.id)}
+                          className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg hover:shadow-lg hover:shadow-green-500/50 transition-all text-white font-medium"
+                          title="Make Law"
+                        >
+                          <i className="fa-solid fa-scale-balanced mr-2"></i>
+                          Make Law
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setEditingLegislation(leg);
+                          setShowLegislationForm(true);
+                        }}
+                        className="px-4 py-2 border border-cyan-bright/50 rounded-lg hover:bg-cyan-bright/10 transition-all text-cyan-bright"
+                      >
+                        <i className="fa-solid fa-edit"></i>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLegislation(leg.id)}
+                        className="px-4 py-2 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-all text-red-400"
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -599,9 +843,6 @@ export default function AdminPanel() {
                         {job.title}
                       </h3>
                       <p className="text-white/60 text-sm mb-1">{job.council}</p>
-                      <p className="text-white/40 text-xs">
-                        Deadline: {new Date(job.deadline).toLocaleDateString()}
-                      </p>
                     </div>
                     <button
                       onClick={() => handleDeleteJob(job.id)}
@@ -623,7 +864,7 @@ export default function AdminPanel() {
           <div className="glass-card rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-midnight/90 backdrop-blur-sm p-6 border-b border-white/10 flex justify-between items-center">
               <h2 className="text-2xl font-display font-bold text-white">
-                {editingArticle.id.startsWith('ART-') ? 'Create New Article' : 'Edit Article'}
+                {(editingArticle as any).id?.startsWith('ART-') ? 'Create New Article' : 'Edit Article'}
               </h2>
               <button
                 onClick={() => {
@@ -659,13 +900,15 @@ export default function AdminPanel() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-white/80 mb-2">Date</label>
-                  <input
-                    type="date"
-                    value={editingArticle.date}
-                    onChange={(e) => setEditingArticle({...editingArticle, date: e.target.value})}
+                  <label className="block text-white/80 mb-2">Status</label>
+                  <select
+                    value={(editingArticle as any).status || 'Draft'}
+                    onChange={(e) => setEditingArticle({...editingArticle, status: e.target.value } as any)}
                     className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
-                  />
+                  >
+                    <option value="Draft">Draft</option>
+                    <option value="Published">Published</option>
+                  </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -718,6 +961,238 @@ export default function AdminPanel() {
                   onClick={() => {
                     setShowArticleForm(false);
                     setEditingArticle(null);
+                  }}
+                  className="px-6 py-3 border border-white/20 rounded-lg font-medium hover:bg-white/5 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Official Edit Modal */}
+      {showOfficialForm && editingOfficial && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="glass-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-midnight/90 backdrop-blur-sm p-6 border-b border-white/10 flex justify-between items-center">
+              <h2 className="text-2xl font-display font-bold text-white">
+                {editingOfficial.id?.startsWith('OFF-') && editingOfficial.name === '' ? 'Add New Official' : 'Edit Official'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowOfficialForm(false);
+                  setEditingOfficial(null);
+                }}
+                className="text-white/60 hover:text-white text-2xl"
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-white/80 mb-2">Name</label>
+                <input
+                  type="text"
+                  value={editingOfficial.name}
+                  onChange={(e) => setEditingOfficial({...editingOfficial, name: e.target.value})}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-white/80 mb-2">Title</label>
+                  <input
+                    type="text"
+                    value={editingOfficial.title}
+                    onChange={(e) => setEditingOfficial({...editingOfficial, title: e.target.value})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/80 mb-2">Status</label>
+                  <select
+                    value={editingOfficial.status}
+                    onChange={(e) => setEditingOfficial({...editingOfficial, status: e.target.value as any})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="On Leave">On Leave</option>
+                    <option value="Transitioning">Transitioning</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Council</label>
+                <input
+                  type="text"
+                  value={editingOfficial.council}
+                  onChange={(e) => setEditingOfficial({...editingOfficial, council: e.target.value})}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Portfolio</label>
+                <input
+                  type="text"
+                  value={editingOfficial.portfolio}
+                  onChange={(e) => setEditingOfficial({...editingOfficial, portfolio: e.target.value})}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-white/80 mb-2">Term Start</label>
+                  <input
+                    type="date"
+                    value={editingOfficial.termStart}
+                    onChange={(e) => setEditingOfficial({...editingOfficial, termStart: e.target.value})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/80 mb-2">Term End</label>
+                  <input
+                    type="date"
+                    value={editingOfficial.termEnd}
+                    onChange={(e) => setEditingOfficial({...editingOfficial, termEnd: e.target.value})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Biography</label>
+                <textarea
+                  value={editingOfficial.bio}
+                  onChange={(e) => setEditingOfficial({...editingOfficial, bio: e.target.value})}
+                  rows={4}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none resize-none"
+                />
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button
+                  onClick={() => handleSaveOfficial(editingOfficial)}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-bright to-violet rounded-lg font-medium hover:shadow-lg hover:shadow-cyan-bright/50 transition-all"
+                >
+                  <i className="fa-solid fa-save mr-2"></i>
+                  Save Official
+                </button>
+                <button
+                  onClick={() => {
+                    setShowOfficialForm(false);
+                    setEditingOfficial(null);
+                  }}
+                  className="px-6 py-3 border border-white/20 rounded-lg font-medium hover:bg-white/5 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Legislation Edit Modal */}
+      {showLegislationForm && editingLegislation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="glass-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-midnight/90 backdrop-blur-sm p-6 border-b border-white/10 flex justify-between items-center">
+              <h2 className="text-2xl font-display font-bold text-white">
+                {editingLegislation.title === '' ? 'Create New Bill/Act' : 'Edit Legislation'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowLegislationForm(false);
+                  setEditingLegislation(null);
+                }}
+                className="text-white/60 hover:text-white text-2xl"
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-white/80 mb-2">Title</label>
+                <input
+                  type="text"
+                  value={editingLegislation.title}
+                  onChange={(e) => setEditingLegislation({...editingLegislation, title: e.target.value})}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Description</label>
+                <textarea
+                  value={editingLegislation.description || ''}
+                  onChange={(e) => setEditingLegislation({...editingLegislation, description: e.target.value})}
+                  rows={4}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Sponsor</label>
+                <input
+                  type="text"
+                  value={editingLegislation.sponsor}
+                  onChange={(e) => setEditingLegislation({...editingLegislation, sponsor: e.target.value})}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2">Status</label>
+                <select
+                  value={editingLegislation.status}
+                  onChange={(e) => setEditingLegislation({...editingLegislation, status: e.target.value as any})}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                >
+                  <option value="Draft">Draft</option>
+                  <option value="Bill">Bill</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Passed">Passed (Law)</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-white/80 mb-2">Votes For</label>
+                  <input
+                    type="number"
+                    value={editingLegislation.votes.for}
+                    onChange={(e) => setEditingLegislation({...editingLegislation, votes: {...editingLegislation.votes, for: parseInt(e.target.value) || 0}})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/80 mb-2">Votes Against</label>
+                  <input
+                    type="number"
+                    value={editingLegislation.votes.against}
+                    onChange={(e) => setEditingLegislation({...editingLegislation, votes: {...editingLegislation.votes, against: parseInt(e.target.value) || 0}})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-white/80 mb-2">Abstentions</label>
+                  <input
+                    type="number"
+                    value={editingLegislation.votes.abstain}
+                    onChange={(e) => setEditingLegislation({...editingLegislation, votes: {...editingLegislation.votes, abstain: parseInt(e.target.value) || 0}})}
+                    className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button
+                  onClick={() => handleSaveLegislation(editingLegislation)}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-bright to-violet rounded-lg font-medium hover:shadow-lg hover:shadow-cyan-bright/50 transition-all"
+                >
+                  <i className="fa-solid fa-save mr-2"></i>
+                  Save Legislation
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLegislationForm(false);
+                    setEditingLegislation(null);
                   }}
                   className="px-6 py-3 border border-white/20 rounded-lg font-medium hover:bg-white/5 transition-all"
                 >
