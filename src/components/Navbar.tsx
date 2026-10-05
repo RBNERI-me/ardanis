@@ -33,7 +33,7 @@ export default function Navbar() {
   const location = useLocation();
 
   return (
-    <nav className="sticky top-0 z-50">
+    <nav className="relative z-40">
       {/* Top Gradient Glow Line */}
       <div className="h-[1px] bg-gradient-to-r from-transparent via-cyan-bright/40 to-transparent"></div>
       

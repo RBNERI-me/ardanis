@@ -135,17 +135,6 @@ const defaultOfficials: Official[] = [
   }
 ];
 
-// Default admin account
-const DEFAULT_ADMIN: User = {
-  id: 'USR-001',
-  username: 'admin',
-  password: 'ardan1s2026',
-  role: 'admin',
-  name: 'System Administrator',
-  email: 'admin@ardan.gov',
-  createdAt: new Date().toISOString()
-};
-
 export default function AdminPanel() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -225,9 +214,8 @@ export default function AdminPanel() {
     if (savedUsers) {
       setUsers(JSON.parse(savedUsers));
     } else {
-      // Initialize with default admin account
-      setUsers([DEFAULT_ADMIN]);
-      localStorage.setItem('ardanisAdminUsers', JSON.stringify([DEFAULT_ADMIN]));
+      // No users exist - show setup screen
+      setUsers([]);
     }
   }, []);
 
@@ -452,6 +440,122 @@ export default function AdminPanel() {
     }
   };
 
+  // Initial Setup Screen (when no users exist)
+  if (users.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="glass-card rounded-2xl max-w-2xl w-full p-8">
+          <div className="text-center mb-8">
+            <div className="inline-block mb-4">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-bright to-violet flex items-center justify-center">
+                <i className="fa-solid fa-user-plus text-4xl text-white"></i>
+              </div>
+            </div>
+            <h1 className="text-3xl font-display font-bold text-white mb-2">
+              Initial Setup Required
+            </h1>
+            <p className="text-white/60">
+              No administrator accounts exist. Please create the first admin account to begin.
+            </p>
+          </div>
+
+          <form onSubmit={handleCreateAccount} className="space-y-4">
+            <div>
+              <label className="block text-white/80 mb-2 text-sm font-medium">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={newAccount.name}
+                onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
+                className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none transition-colors"
+                placeholder="John Doe"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-white/80 mb-2 text-sm font-medium">
+                Email
+              </label>
+              <input
+                type="email"
+                value={newAccount.email}
+                onChange={(e) => setNewAccount({ ...newAccount, email: e.target.value })}
+                className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none transition-colors"
+                placeholder="admin@ardan.gov"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-white/80 mb-2 text-sm font-medium">
+                Username
+              </label>
+              <input
+                type="text"
+                value={newAccount.username}
+                onChange={(e) => setNewAccount({ ...newAccount, username: e.target.value })}
+                className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none transition-colors"
+                placeholder="admin"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-white/80 mb-2 text-sm font-medium">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={newAccount.password}
+                  onChange={(e) => setNewAccount({ ...newAccount, password: e.target.value })}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none transition-colors"
+                  placeholder="Min 6 characters"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-white/80 mb-2 text-sm font-medium">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  value={newAccount.confirmPassword}
+                  onChange={(e) => setNewAccount({ ...newAccount, confirmPassword: e.target.value })}
+                  className="w-full bg-midnight/50 border border-white/20 rounded-lg px-4 py-3 text-white focus:border-cyan-bright focus:outline-none transition-colors"
+                  placeholder="Repeat password"
+                  required
+                />
+              </div>
+            </div>
+
+            {accountError && (
+              <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-red-400 text-sm">
+                <i className="fa-solid fa-exclamation-triangle mr-2"></i>
+                {accountError}
+              </div>
+            )}
+
+            <div className="bg-cyan-bright/10 border border-cyan-bright/30 rounded-lg p-4 text-sm text-cyan-bright">
+              <i className="fa-solid fa-shield-halved mr-2"></i>
+              <strong>Security Notice:</strong> This account will have full administrative privileges. Choose a strong password and keep it secure.
+            </div>
+
+            <button
+              type="submit"
+              className="w-full px-6 py-3 bg-gradient-to-r from-cyan-bright to-violet rounded-lg font-medium hover:shadow-lg hover:shadow-cyan-bright/50 transition-all"
+            >
+              <i className="fa-solid fa-user-plus mr-2"></i>
+              Create Administrator Account
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   // Login Screen
   if (!isLoggedIn) {
     return (
@@ -522,7 +626,7 @@ export default function AdminPanel() {
               This is a restricted area. All actions are logged.
             </p>
             <p className="text-xs text-white/30 text-center mt-2">
-              Default admin: admin / ardan1s2026
+              Contact your system administrator if you need access.
             </p>
           </div>
         </div>

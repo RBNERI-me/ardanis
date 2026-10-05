@@ -46,8 +46,10 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col relative">
-        <AnnouncementBar />
-        <Navbar />
+        <div className="sticky top-0 z-50">
+          <AnnouncementBar />
+          <Navbar />
+        </div>
         <main className="flex-1 relative z-10">
           <Routes>
             <Route path="/" element={<Home />} />
