@@ -38,11 +38,24 @@ interface Legislation {
   createdDate?: string;
 }
 
+interface EResidencyApplication {
+  id: string;
+  fullName: string;
+  email: string;
+  expertise: string;
+  statement: string;
+  status: 'pending' | 'approved' | 'rejected';
+  appliedDate: string;
+  reviewedDate: string | null;
+  residentId: string | null;
+}
+
 interface AdminState {
   articles: Article[];
   jobs: Job[];
   officials: Official[];
   legislation: Legislation[];
+  eResidencyApplications: EResidencyApplication[];
 }
 
 const defaultOfficials: Official[] = [
@@ -158,7 +171,8 @@ export default function AdminPanel() {
     articles: [],
     jobs: [],
     officials: [],
-    legislation: []
+    legislation: [],
+    eResidencyApplications: []
   });
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [showArticleForm, setShowArticleForm] = useState(false);
@@ -172,6 +186,8 @@ export default function AdminPanel() {
   // Load data from localStorage or use defaults
   useEffect(() => {
     const savedData = localStorage.getItem('ardanisAdminData');
+    const savedApps = localStorage.getItem('ardaniserApplications');
+    
     if (savedData) {
       const data = JSON.parse(savedData);
       setAdminData({
@@ -185,7 +201,8 @@ export default function AdminPanel() {
           { id: 'ARD-L-2026-004', title: 'Open Data Transparency Mandate', sponsor: 'Transparency Portfolio', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } },
           { id: 'ARD-L-2026-005', title: 'Renewable Energy Infrastructure Fund', sponsor: 'Science & Technology', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } },
           { id: 'ARD-L-2026-006', title: 'Cultural Heritage Preservation Act', sponsor: 'Arts & Culture', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } }
-        ]
+        ],
+        eResidencyApplications: savedApps ? JSON.parse(savedApps) : []
       });
     } else {
       setAdminData({
@@ -199,7 +216,8 @@ export default function AdminPanel() {
           { id: 'ARD-L-2026-004', title: 'Open Data Transparency Mandate', sponsor: 'Transparency Portfolio', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } },
           { id: 'ARD-L-2026-005', title: 'Renewable Energy Infrastructure Fund', sponsor: 'Science & Technology', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } },
           { id: 'ARD-L-2026-006', title: 'Cultural Heritage Preservation Act', sponsor: 'Arts & Culture', status: 'Draft', votes: { for: 0, against: 0, abstain: 0 } }
-        ]
+        ],
+        eResidencyApplications: savedApps ? JSON.parse(savedApps) : []
       });
     }
   }, []);
@@ -470,6 +488,59 @@ export default function AdminPanel() {
     }
     setEditingJob(null);
     setShowJobForm(false);
+  };
+
+  // E-Residency Application Management
+  const handleApproveApplication = (appId: string) => {
+    const app = adminData.eResidencyApplications.find(a => a.id === appId);
+    if (!app) return;
+
+    // Generate E-Residency ID
+    const residentId = `ARD-E-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
+    // Update application
+    const updated = adminData.eResidencyApplications.map(a =>
+      a.id === appId
+        ? {
+            ...a,
+            status: 'approved' as const,
+            reviewedDate: new Date().toISOString(),
+            residentId: residentId
+          }
+        : a
+    );
+
+    setAdminData({ ...adminData, eResidencyApplications: updated });
+    
+    // Also save to separate localStorage for E-Residency page
+    localStorage.setItem('ardaniserApplications', JSON.stringify(updated));
+    
+    alert(`Application approved!\n\nE-Residency ID: ${residentId}\n\nThe applicant will be notified at: ${app.email}`);
+  };
+
+  const handleRejectApplication = (appId: string) => {
+    if (!confirm('Are you sure you want to reject this application?')) return;
+
+    const updated = adminData.eResidencyApplications.map(a =>
+      a.id === appId
+        ? {
+            ...a,
+            status: 'rejected' as const,
+            reviewedDate: new Date().toISOString()
+          }
+        : a
+    );
+
+    setAdminData({ ...adminData, eResidencyApplications: updated });
+    localStorage.setItem('ardaniserApplications', JSON.stringify(updated));
+  };
+
+  const handleDeleteApplication = (appId: string) => {
+    if (!confirm('Are you sure you want to delete this application?')) return;
+
+    const updated = adminData.eResidencyApplications.filter(a => a.id !== appId);
+    setAdminData({ ...adminData, eResidencyApplications: updated });
+    localStorage.setItem('ardaniserApplications', JSON.stringify(updated));
   };
 
   // Initial Setup Screen (when no users exist)
@@ -770,6 +841,24 @@ export default function AdminPanel() {
           )}
           {(userRole === 'admin') && (
             <button
+              onClick={() => setActiveSection('eresidency')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                activeSection === 'eresidency'
+                  ? 'bg-cyan-bright/20 text-cyan-bright'
+                  : 'text-white/60 hover:text-white'
+              }`}
+            >
+              <i className="fa-solid fa-id-card mr-2"></i>
+              E-Residency
+              {adminData.eResidencyApplications.filter(a => a.status === 'pending').length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-gold/20 text-gold text-xs rounded-full">
+                  {adminData.eResidencyApplications.filter(a => a.status === 'pending').length}
+                </span>
+              )}
+            </button>
+          )}
+          {(userRole === 'admin') && (
+            <button
               onClick={() => setActiveSection('accounts')}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 activeSection === 'accounts'
@@ -789,7 +878,7 @@ export default function AdminPanel() {
             <h2 className="text-3xl font-display font-bold text-white mb-6">
               Dashboard Overview
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <div className="glass-card rounded-xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-12 h-12 rounded-lg bg-cyan-bright/20 flex items-center justify-center">
@@ -836,6 +925,18 @@ export default function AdminPanel() {
                   {adminData.jobs.length}
                 </div>
                 <div className="text-white/60">Open Positions</div>
+              </div>
+
+              <div className="glass-card rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center">
+                    <i className="fa-solid fa-id-card text-green-400 text-xl"></i>
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-white mb-1">
+                  {adminData.eResidencyApplications.filter(a => a.status === 'pending').length}
+                </div>
+                <div className="text-white/60">Pending Applications</div>
               </div>
             </div>
           </div>
@@ -1170,6 +1271,149 @@ export default function AdminPanel() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* E-Residency Applications Section (Admin Only) */}
+        {activeSection === 'eresidency' && userRole === 'admin' && (
+          <div>
+            <h2 className="text-3xl font-display font-bold text-white mb-6">
+              E-Residency Applications
+            </h2>
+
+            {/* Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="glass-card rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-gold/20 flex items-center justify-center">
+                    <i className="fa-solid fa-hourglass-half text-gold text-xl"></i>
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-white mb-1">
+                  {adminData.eResidencyApplications.filter(a => a.status === 'pending').length}
+                </div>
+                <div className="text-white/60">Pending Review</div>
+              </div>
+
+              <div className="glass-card rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center">
+                    <i className="fa-solid fa-check text-green-400 text-xl"></i>
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-white mb-1">
+                  {adminData.eResidencyApplications.filter(a => a.status === 'approved').length}
+                </div>
+                <div className="text-white/60">Approved</div>
+              </div>
+
+              <div className="glass-card rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center">
+                    <i className="fa-solid fa-xmark text-red-400 text-xl"></i>
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-white mb-1">
+                  {adminData.eResidencyApplications.filter(a => a.status === 'rejected').length}
+                </div>
+                <div className="text-white/60">Rejected</div>
+              </div>
+            </div>
+
+            {/* Applications List */}
+            {adminData.eResidencyApplications.length === 0 ? (
+              <div className="glass-card rounded-xl p-12 text-center">
+                <i className="fa-solid fa-inbox text-6xl text-white/20 mb-4"></i>
+                <p className="text-white/60 text-lg">No E-Residency applications yet</p>
+                <p className="text-white/40 text-sm mt-2">Applications will appear here when submitted</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {adminData.eResidencyApplications.map(app => (
+                  <div key={app.id} className="glass-card rounded-xl p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                            app.status === 'pending' ? 'bg-gold/20 text-gold border-gold/50' :
+                            app.status === 'approved' ? 'bg-green-500/20 text-green-400 border-green-500/50' :
+                            'bg-red-500/20 text-red-400 border-red-500/50'
+                          }`}>
+                            {app.status === 'pending' && <i className="fa-solid fa-hourglass-half mr-1"></i>}
+                            {app.status === 'approved' && <i className="fa-solid fa-check mr-1"></i>}
+                            {app.status === 'rejected' && <i className="fa-solid fa-xmark mr-1"></i>}
+                            {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                          </span>
+                          <span className="text-white/40 text-xs font-mono">{app.id}</span>
+                        </div>
+                        
+                        <h3 className="text-xl font-bold text-white mb-2">{app.fullName}</h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                          <div>
+                            <p className="text-xs text-white/40 mb-1">Email</p>
+                            <p className="text-sm text-white/80">{app.email}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-white/40 mb-1">Expertise</p>
+                            <p className="text-sm text-white/80">{app.expertise}</p>
+                          </div>
+                        </div>
+
+                        <div className="mb-3">
+                          <p className="text-xs text-white/40 mb-1">Statement of Intent</p>
+                          <p className="text-sm text-white/70 italic">{app.statement}</p>
+                        </div>
+
+                        <div className="flex gap-4 text-xs text-white/50">
+                          <span>
+                            <i className="fa-solid fa-calendar mr-1"></i>
+                            Applied: {new Date(app.appliedDate).toLocaleDateString()}
+                          </span>
+                          {app.reviewedDate && (
+                            <span>
+                              <i className="fa-solid fa-check-circle mr-1"></i>
+                              Reviewed: {new Date(app.reviewedDate).toLocaleDateString()}
+                            </span>
+                          )}
+                          {app.residentId && (
+                            <span className="text-cyan-bright">
+                              <i className="fa-solid fa-id-card mr-1"></i>
+                              E-Resident ID: {app.residentId}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        {app.status === 'pending' && (
+                          <>
+                            <button
+                              onClick={() => handleApproveApplication(app.id)}
+                              className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg hover:shadow-lg hover:shadow-green-500/50 transition-all text-white font-medium text-sm"
+                            >
+                              <i className="fa-solid fa-check mr-1"></i> Approve
+                            </button>
+                            <button
+                              onClick={() => handleRejectApplication(app.id)}
+                              className="px-4 py-2 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-all text-red-400 text-sm"
+                            >
+                              <i className="fa-solid fa-xmark mr-1"></i> Reject
+                            </button>
+                          </>
+                        )}
+                        <button
+                          onClick={() => handleDeleteApplication(app.id)}
+                          className="px-4 py-2 border border-white/20 rounded-lg hover:bg-white/5 transition-all text-white/60 text-sm"
+                        >
+                          <i className="fa-solid fa-trash mr-1"></i> Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

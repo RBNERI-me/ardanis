@@ -17,12 +17,28 @@ export default function EResidency() {
     statement: ''
   });
   const [submitted, setSubmitted] = useState(false);
-  const [residentId, setResidentId] = useState('');
+  const [applicationId, setApplicationId] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const id = `ARD-E-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    setResidentId(id);
+    
+    // Generate application ID
+    const appId = `APP-${Date.now().toString(36).toUpperCase()}`;
+    setApplicationId(appId);
+    
+    // Save application to localStorage as pending
+    const existingApps = JSON.parse(localStorage.getItem('ardaniserApplications') || '[]');
+    const newApplication = {
+      id: appId,
+      ...formData,
+      status: 'pending',
+      appliedDate: new Date().toISOString(),
+      reviewedDate: null,
+      residentId: null
+    };
+    existingApps.push(newApplication);
+    localStorage.setItem('ardaniserApplications', JSON.stringify(existingApps));
+    
     setSubmitted(true);
   };
 
@@ -30,50 +46,52 @@ export default function EResidency() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16">
         <div className="glass-card rounded-3xl p-8 text-center">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-bright to-violet flex items-center justify-center mx-auto mb-6 glow-cyan">
-            <i className="fa-solid fa-check text-3xl text-white"></i>
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gold to-violet flex items-center justify-center mx-auto mb-6 glow-gold">
+            <i className="fa-solid fa-hourglass-half text-3xl text-white"></i>
           </div>
-          <h2 className="text-3xl font-bold font-display text-white mb-4">Application Verified</h2>
-          <p className="text-white/60 mb-6">Your E-Residency has been processed. Here is your digital identity card:</p>
+          <h2 className="text-3xl font-bold font-display text-white mb-4">Application Submitted</h2>
+          <p className="text-white/60 mb-6">Your E-Residency application has been received and is pending administrative review.</p>
           
-          <div className="glass rounded-2xl p-6 border border-cyan-bright/30 glow-cyan max-w-sm mx-auto mb-6">
+          <div className="glass rounded-2xl p-6 border border-gold/30 max-w-sm mx-auto mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <Flag size={32} />
                 <div className="text-left">
-                  <p className="text-xs text-cyan-bright/60 uppercase tracking-wider">Sovereign Republic of Ardanis</p>
-                  <p className="text-sm font-bold text-white">Digital E-Resident Card</p>
+                  <p className="text-xs text-gold/60 uppercase tracking-wider">Sovereign Republic of Ardanis</p>
+                  <p className="text-sm font-bold text-white">E-Residency Application</p>
                 </div>
               </div>
               <StateSeal size={40} />
             </div>
-            <div className="bg-midnight/60 rounded-xl p-4 border border-cyan-bright/10">
-              <p className="text-xs text-white/40 mb-1">Resident ID</p>
-              <p className="text-lg font-mono font-bold text-cyan-bright text-glow-cyan">{residentId}</p>
-              <div className="mt-3 grid grid-cols-2 gap-3 text-left">
+            <div className="bg-midnight/60 rounded-xl p-4 border border-gold/10">
+              <p className="text-xs text-white/40 mb-1">Application ID</p>
+              <p className="text-lg font-mono font-bold text-gold mb-3">{applicationId}</p>
+              <div className="grid grid-cols-2 gap-3 text-left">
                 <div>
                   <p className="text-xs text-white/40">Name</p>
                   <p className="text-sm text-white font-medium">{formData.fullName}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-white/40">Domain</p>
-                  <p className="text-sm text-white font-medium">{formData.expertise}</p>
+                  <p className="text-xs text-white/40">Email</p>
+                  <p className="text-sm text-white font-medium truncate">{formData.email}</p>
                 </div>
               </div>
-              <div className="mt-3 pt-3 border-t border-cyan-bright/10">
+              <div className="mt-3 pt-3 border-t border-gold/10">
                 <p className="text-xs text-white/40">Status</p>
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30 mt-1">
-                  <i className="fa-solid fa-circle-check"></i> Verified Active
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gold/20 text-gold border border-gold/30 mt-1">
+                  <i className="fa-solid fa-hourglass-half"></i> Pending Review
                 </span>
               </div>
             </div>
           </div>
 
-          <p className="text-xs text-white/40">Save your Resident ID for future reference.</p>
+          <p className="text-xs text-white/40 mb-2">Save your Application ID for reference.</p>
+          <p className="text-xs text-white/50">An administrator will review your application. Once approved, you will receive your E-Residency ID.</p>
           <button
             onClick={() => {
               setSubmitted(false);
               setFormData({ fullName: '', email: '', expertise: '', statement: '' });
+              setApplicationId('');
             }}
             className="mt-6 btn-primary px-6 py-2 rounded-xl text-sm"
           >
