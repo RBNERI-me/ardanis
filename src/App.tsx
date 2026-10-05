@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import GovBot from './components/GovBot';
 import Home from './pages/Home';
 import History from './pages/History';
 import Officials from './pages/Officials';
@@ -50,7 +49,7 @@ function App() {
           <AnnouncementBar />
           <Navbar />
         </div>
-        <main className="flex-1 relative z-10">
+        <main className="flex-1 relative z-0">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/history" element={<History />} />
@@ -68,7 +67,6 @@ function App() {
           </Routes>
         </main>
         <Footer />
-        <GovBot />
       </div>
     </Router>
   );

@@ -231,9 +231,9 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div className={`xl:hidden transition-all duration-500 ease-in-out overflow-hidden ${
-        mobileOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'
+        mobileOpen ? 'max-h-[80vh] opacity-100' : 'max-h-0 opacity-0'
       }`}>
-        <div className="glass-dark border-b border-cyan-bright/10 relative overflow-hidden">
+        <div className="glass-dark border-b border-cyan-bright/10 relative overflow-y-auto">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none"></div>
           
           <div className="px-4 py-6 space-y-2 relative z-10">
